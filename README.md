@@ -77,9 +77,11 @@ thing, ready to use.
 
 ## Provenance
 
-Anthill was extracted from a working agent harness (the Nodachi Unity repo).
-The worked examples referenced throughout the config templates are that
-project's bindings — they teach the *shape* of an adaptation, never content to
-copy. Framework changes propagate through the Anthill framework home; this
-installation records its sync state in
-[`.anthill/framework.md`](.anthill/framework.md).
+Anthill was extracted from a working agent harness (the Nodachi Unity repo);
+the worked examples throughout the config templates are that project's
+bindings — they teach the *shape* of an adaptation, never content to copy.
+
+This repository is the framework's upstream source of truth. A consuming
+project records which upstream release it tracks in
+[`.anthill/framework.md`](.anthill/framework.md) and upgrades by re-copying the
+general-tier skills from here (or running `anthill sync`).

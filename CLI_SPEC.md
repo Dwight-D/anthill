@@ -42,8 +42,11 @@ a guarantee, not a gate.
 - **Idempotent and non-destructive.** Re-running converges; nothing overwrites
   derived config or user edits without an explicit `--force`.
 - **Pinned provenance.** The embedded template corresponds to a tagged upstream
-  release. Every scaffold stamps that ref into `.anthill/framework.md` so `sync`
-  and `doctor` have a baseline.
+  release; every scaffold stamps that exact ref into `.anthill/framework.md`
+  (surfaced by `anthill version`). The framework's provenance is therefore fixed
+  by *what was scaffolded*, not by how the CLI was obtained — installing the CLI
+  `@latest` still yields a pinned, recorded framework install. `sync` and
+  `doctor` read that ref as their baseline.
 
 ## The embedded template
 

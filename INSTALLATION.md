@@ -14,8 +14,7 @@ escalation. It is transported as **structured human language**: general-tier
 skills you copy verbatim, plus a `.anthill/` configuration directory you
 *derive* from the target environment. **Never port another project's
 bindings — derive your own;** the worked examples in this template's config
-files (and in the framework's mechanism nodes) teach the shape of an
-adaptation, not its content.
+files teach the shape of an adaptation, not its content.
 
 > **Agent entrypoint.** If you arrived here from a link or from
 > `anthill bootstrap`, [`BOOTSTRAP.md`](BOOTSTRAP.md) is the one-page start:
@@ -37,14 +36,20 @@ adaptation, not its content.
 - A git repository for the project.
 - The user, for the derivation session.
 
-## Sources of truth
+## Source of truth
 
-1. **The general-tier skills in this template's `.claude/skills/`** — the live,
-   canonical texts. Copy them verbatim; they run unmodified in any project.
-2. **The framework's mechanism nodes** (the Anthill framework home) — the full
-   contracts and the reasoning behind them, complete enough to author every
-   artifact from scratch. Where a node's embedded sample and a live skill
-   differ, the live skill wins.
+This repository is the framework's upstream source of truth — everything you
+need to install and reason about Anthill is in it:
+
+1. **The general-tier skills in `.claude/skills/`** — the live, canonical
+   texts and the reasoning behind them, complete enough to author every
+   artifact. Copy them verbatim; they run unmodified in any project.
+2. **The `.anthill/` placeholder config** — the shape of every artifact you
+   derive, with worked examples marked as illustrative.
+3. **This guide and [`README.md`](README.md)** — the model and the procedure.
+
+Where a template's embedded sample and a live skill disagree, the live skill
+wins (samples are illustrative snapshots).
 
 ## Step 1 — Read the framework
 
@@ -124,11 +129,12 @@ pointer to `.anthill/backlog/`. Keep it small.
 
 ## Step 5 — Optional hardening
 
-- **Launcher** (unattended supervisor): `tools/supervise.sh` / `.ps1` start a
-  session with elevated permissions + remote steering + `/supervisor
-  <mission>` — required because skills cannot self-escalate (harness design)
-  and child agents inherit the launched mode. Name it in
-  `supervisor/bindings.md`.
+- **Launcher** (unattended supervisor): the `tools/supervise.sh` / `.ps1`
+  templates ship with the scaffold; opt into them here. They start a session
+  with elevated permissions + remote steering + `/supervisor <mission>` —
+  required because skills cannot self-escalate (harness design) and child agents
+  inherit the launched mode. Adjust for your environment and name the launcher
+  in `supervisor/bindings.md`.
 - **Schema-owner CLI**: when a backlog/escalation CLI is available, install it
   and set it as the schema owner in `backlog/bindings.md`. Until then, operate
   convention-first with care — skills reference the schema owner only through
@@ -160,11 +166,13 @@ pointer to `.anthill/backlog/`. Keep it small.
   adaptation lives in `.anthill/`. Upgrading the framework = replacing skill
   files.
 - **Flag upstream, don't fork.** Gaps or findings about the framework itself
-  are filed to the framework home as feedback — never fixed via local skill
-  edits. An urgently needed local mitigation goes into `.anthill/` config and
-  is named in the feedback item so the maintainer can supersede it.
-- **Sync downstream.** Periodically (and whenever the user relays framework
-  news) apply framework changelog entries newer than
-  `.anthill/framework.md`'s `synced-through` date, then bump the date.
+  are filed upstream to the Anthill repository (an issue or PR) — never fixed
+  via local skill edits. An urgently needed local mitigation goes into
+  `.anthill/` config and is named in the upstream report so the maintainer can
+  supersede it.
+- **Sync downstream.** Periodically, re-copy the general-tier skills from the
+  upstream Anthill repository at a newer release than `.anthill/framework.md`'s
+  `synced-through` ref, then bump the ref. `anthill sync` does this
+  mechanically.
 - **Posture.** Start propose-only (triage recommends, the user approves);
   loosen per workstream as the gates earn trust.

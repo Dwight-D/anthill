@@ -37,22 +37,28 @@ Pick the first branch that applies.
 anthill scaffold
 ```
 This writes the general-tier skills verbatim, the `.anthill/` placeholder
-config tree, `CLAUDE.template.md`, and the launcher, all pinned to a known
-framework version it stamps into `.anthill/framework.md`. It prints a manifest
-of what it wrote. Then go to Step 2.
+config tree, `CLAUDE.template.md`, `.gitignore`, and the `tools/` launcher
+template (which you opt into wiring per Step 5), all pinned to a known framework
+version it stamps into `.anthill/framework.md`. It prints a manifest of what it
+wrote. Then go to Step 2.
 
 **B. `anthill` is not installed, but Go is** (check: `go version`):
 ```
-go install github.com/Dwight-D/anthill-cli/cmd/anthill@latest
+go install github.com/Dwight-D/anthill-cli/cmd/anthill@latest   # or @<version> for a reproducible CLI build
 anthill scaffold
 ```
-If `anthill` is not on `PATH` after install, it is under Go's bin
-directory (`go env GOBIN`, else `$(go env GOPATH)/bin`). Then go to Step 2.
+The scaffolded framework's version is pinned regardless of how you obtained the
+CLI: `scaffold` stamps the exact template ref it shipped (see `anthill version`)
+into `.anthill/framework.md`. If `anthill` is not on `PATH` after install, it is
+under Go's bin directory (`go env GOBIN`, else `$(go env GOPATH)/bin`). Then go
+to Step 2.
 
-**C. Neither** — do the mechanical copy by hand. Follow
-[`INSTALLATION.md`](INSTALLATION.md) **Step 2** (copy `.claude/skills/*`
-verbatim into the project) and the skeleton it describes for `.anthill/`. Then
-go to Step 2 below.
+**C. Neither** — do the mechanical copy by hand from the Anthill template
+repository (the source of this document). Copy both tiers verbatim into the
+target project: `.claude/skills/` (the nine general-tier skills) and the
+`.anthill/` placeholder config tree, plus `CLAUDE.template.md`, `tools/`, and
+`.gitignore`. See [`INSTALLATION.md`](INSTALLATION.md) **Step 2**. Then go to
+Step 2 below.
 
 > Whichever branch you took, the mechanical result is identical: the nine
 > general-tier skills copied byte-for-byte, and a `.anthill/` tree of

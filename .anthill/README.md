@@ -18,7 +18,7 @@ Every file here is one of two classes:
 ```
 .anthill/
   README.md            # this file
-  framework.md         # config  — provenance + sync state against the framework home
+  framework.md         # config  — provenance + sync state against the upstream repo
   resources.md         # config  — exclusive-resource inventory + derived caps
   decisions.md         # runtime — routine-choice log for autonomous work
   supervisor/

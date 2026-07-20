@@ -10,8 +10,9 @@ human language**: skill files a capable agent reads and follows, plus a
 configuration directory a consumer derives for their environment. "Working with the
 code" here means editing Markdown contracts, not compiling anything.
 
-This repository is the **upstream template / framework home** — not a consumer
-installation. That distinction changes the editing rules (see below).
+This repository is the framework's **upstream source of truth** — the template
+consumers copy from, not a consumer installation. That distinction changes the
+editing rules (see below).
 
 ## Two-tier architecture (the load-bearing idea)
 
@@ -31,7 +32,7 @@ A consumer adopts Anthill by *copy the skills, derive the config*.
 
 ## Editing rules in THIS repo (upstream vs. consumer)
 
-Because this is the framework home, not a consumer:
+Because this is the upstream source, not a consumer:
 
 - **`.claude/skills/*` are canonical source here** — editing them is legitimate
   framework maintenance. In a consumer they would be immutable. When you change a
@@ -88,10 +89,10 @@ Because this is the framework home, not a consumer:
   previous design ("unchanged from X", "no longer Y"). Contrast belongs only in
   dedicated migration/changelog sections (`.anthill/framework.md` sync log,
   `CHANGELOG.md`, `LOG.md`).
-- **Flag upstream, don't fork.** A gap in the framework itself is filed as feedback
-  to the framework home, never patched by locally editing a skill in a consumer.
-  Since this repo *is* the framework home, fixes land directly — but keep the
-  general/specific split intact.
+- **Flag upstream, don't fork.** A gap in the framework itself is filed as
+  feedback upstream (an issue or PR on this repository), never patched by
+  locally editing a skill in a consumer. Since this repo *is* the upstream
+  source, fixes land directly — but keep the general/specific split intact.
 - **Keep the always-on file small.** `CLAUDE.template.md` (the consumer's future
   always-on instructions) stays minimal: safety invariants, the modes-via-skills
   rule, always-on improvement flagging, backlog scope pointer. Reference material
