@@ -3,7 +3,7 @@
 How to adopt the Anthill agent-harness framework in a new project. Written for
 a **capable agent performing the installation with the user present** —
 several steps derive project-specific configuration that only the user can
-decide (budget ~an hour of decisions).
+decide (budget ~15 minutes of decisions and some time to get familiar with the ideas).
 
 ## What you are installing
 
@@ -116,8 +116,11 @@ conversation with the user. Put these questions to them, in order:
    routine action the safety invariants do not gate. → `autonomy.md`.
 
 Runtime artifacts (`agenda.md`, `intake/`, the workstream dirs, both
-`CHANGELOG.md`/`LOG.md`, `decisions.md`) start empty; the agenda seeds from
-the user's first briefing.
+`CHANGELOG.md`/`LOG.md`, `decisions.md`, the controller control flags
+`supervisor/control.md` + `dispatch/control.md`, and the dispatcher progress
+ledger `dispatch/ledger.md`) start empty or `run`; each seeds on first use —
+the agenda from the user's first briefing, a control flag when a tier is
+paused/stopped, the ledger when the dispatcher is handed a framed batch.
 
 ## Step 4 — Always-on instruction file (user-owned)
 
