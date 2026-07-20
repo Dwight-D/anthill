@@ -55,12 +55,12 @@ to Step 2.
 
 **C. Neither** — do the mechanical copy by hand from the Anthill template
 repository (the source of this document). Copy both tiers verbatim into the
-target project: `.claude/skills/` (the nine general-tier skills) and the
+target project: `.claude/skills/` (the ten general-tier skills) and the
 `.anthill/` placeholder config tree, plus `CLAUDE.template.md`, `tools/`, and
 `.gitignore`. See [`INSTALLATION.md`](INSTALLATION.md) **Step 2**. Then go to
 Step 2 below.
 
-> Whichever branch you took, the mechanical result is identical: the nine
+> Whichever branch you took, the mechanical result is identical: the ten
 > general-tier skills copied byte-for-byte, and a `.anthill/` tree of
 > placeholder config to derive. The tool exists to make branch A's guarantee
 > mechanical; it is an accelerator, never a hard dependency.

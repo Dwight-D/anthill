@@ -92,7 +92,7 @@ user."). Zero side effects — safe to run in any directory, in or out of a repo
 ### `anthill scaffold [--into <dir>] [--force] [--dry-run]`
 
 The mechanical install. Into `<dir>` (default: current directory) writes, from
-the embedded pinned template: the nine general-tier skills verbatim, the
+the embedded pinned template: the ten general-tier skills verbatim, the
 `.anthill/` placeholder tree (quote-blocks intact) with empty runtime dirs,
 `CLAUDE.template.md`, `tools/`, and `.gitignore`; then stamps
 `.anthill/framework.md` `synced-through` with the embedded ref + install date.
@@ -128,9 +128,9 @@ One `doctor` covering both roles, reported as two labeled sections. Read-only.
 
 - **skill integrity** — each installed `.claude/skills/*` is byte-identical to
   the embedded pinned version. Any diff is flagged as an illegal local edit to a
-  general-tier skill (the exact divergence the two-tier split prevents). The two
-  sanctioned `autonomous` adaptation points — the proceed-list and the
-  decisions-log path — are recognized and exempted.
+  general-tier skill (the exact divergence the two-tier split prevents). Every
+  skill is checked uniformly — there are no exempted regions, because all
+  per-project autonomy config lives in `.anthill/autonomy.md`, not in the skill.
 - **structure** — the expected `.anthill/` tree is present.
 - **derivation status** — which `.anthill/` files still hold template
   quote-blocks / `<angle-bracket>` fill-ins (i.e. remain un-derived). Reported
@@ -158,11 +158,13 @@ skills against the (newer) embedded version, re-copies changed skills verbatim,
 and bumps `.anthill/framework.md` `synced-through` to the embedded ref. Touches
 no other `.anthill/` config.
 
-- **Preserves the sanctioned `autonomous` adaptations** — the derived
-  proceed-list and decisions-log path are never clobbered; only the surrounding
-  skill text is updated. If an upstream change conflicts with those adaptation
-  regions, `sync` reports the conflict and leaves the file unchanged (exit 3)
-  rather than guessing — resolve manually or re-derive.
+- **Whole-file verbatim re-copy — no per-skill merge.** Skills carry no
+  adaptation regions (all per-project autonomy config lives in
+  `.anthill/autonomy.md`, which `sync` never touches), so a changed skill is
+  simply overwritten with the embedded version. The only conflict class is a
+  skill with an *unexpected local edit* — an illegal divergence: `sync` reports
+  it and leaves the file unchanged (exit 3) rather than silently discarding the
+  edit; `--force` overwrites it (the diff is shown first).
 - **Flags.** `--dry-run` show the skill-level diff without applying; `--force`
   apply even when a skill has an unexpected local edit (overwrites the local
   edit — the diff is shown first).

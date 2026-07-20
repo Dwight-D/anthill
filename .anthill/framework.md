@@ -22,12 +22,13 @@
 ## Two-tier discipline (how this installation stays upgradeable)
 
 - **General tier** = the `.claude/skills/` orchestration skills (`supervisor`,
-  `autonomous`, `triage`, `dispatch`, `dispatch-loop`, `dispatch-receive`,
-  `expedite`, `escalate`, `wake-up`). These are byte-identical to upstream
-  (except the two sanctioned `autonomous` adaptation points). **Never
-  locally edit a general-tier skill** — divergence across installations is
-  the failure mode the two-tier split exists to prevent. Upgrading = replacing
-  skill files.
+  `autonomous`, `triage`, `submit`, `dispatch`, `dispatch-loop`,
+  `dispatch-receive`, `expedite`, `escalate`, `wake-up`). These are
+  byte-identical to upstream — no exceptions. **Never locally edit a
+  general-tier skill** — divergence across installations is the failure mode
+  the two-tier split exists to prevent. Upgrading = replacing skill files.
+  (The `autonomous` skill's per-project inputs live in `.anthill/autonomy.md`,
+  specific-tier config the skill loads at invocation — not a skill edit.)
 - **Specific tier** = everything under `.anthill/` — bindings, workstreams,
   resources, the launcher. All adaptation lives here.
 

@@ -65,7 +65,7 @@ invariant).
 > scaffolded, this copy is done and byte-identical; verify with
 > `anthill doctor` and move to Step 3. Do it by hand only on the manual path.
 
-Copy the nine skills from this template's `.claude/skills/` into the new
+Copy the ten skills from this template's `.claude/skills/` into the new
 project's skills directory:
 
 | Skill | Role |
@@ -73,6 +73,7 @@ project's skills directory:
 | `supervisor` | Orchestration tier contract (opt-in, never ambient) |
 | `autonomous` | The autonomy contract worker briefs invoke on line one |
 | `triage` | Dedup → route to workstream → classify per profile; proposes, never implements |
+| `submit` | Frictionless backlog intake (title + value); any mode, never triages or approves |
 | `dispatch` | Sender/handoff: claim → brief → spawn worker → verify evidence → close |
 | `dispatch-loop` | Autonomous dispatcher tier (agent-only) |
 | `dispatch-receive` | Worker contract (agent-only; first line of dispatch worker briefs) |
@@ -80,13 +81,12 @@ project's skills directory:
 | `escalate` | Durable escalation records: raise / receive / answer / apply |
 | `wake-up` | Controller wake-up protocol; referenced by supervisor/dispatch-loop/escalate |
 
-**Two small adaptations are sanctioned** (they are path/tooling facts, not
-behavior): in the `autonomous` skill, re-derive the **proceed-list** with the
-user against your project's real skills and commands (the template ships
-placeholders), and confirm its decisions-log path points at
-`.anthill/decisions.md`. Everything else copies unchanged — **local edits to
-general-tier skills are how installations diverge; don't.** Adaptations belong
-in `.anthill/`.
+**All ten skills copy verbatim — no exceptions.** There is nothing to edit in a
+skill during install. The one thing the `autonomous` skill needs per project —
+its proceed-list and decisions-log path — lives in `.anthill/autonomy.md`, which
+the skill loads at invocation; you derive that file in Step 3 like any other
+`.anthill/` config. **Local edits to general-tier skills are how installations
+diverge; don't.** Adaptations belong in `.anthill/`.
 
 Not part of Anthill: any project-specific skills (compile checks, domain
 tooling). The adopting project references its own equivalents as *dispatch
@@ -111,6 +111,9 @@ conversation with the user. Put these questions to them, in order:
 5. **What is the worker-cap derivation, and the dispatch parallelism posture?**
    Both fall out of the resource inventory. → `resources.md`.
 6. **What is the sweep order?** → `workstreams.md` frontmatter.
+7. **What may an autonomous worker do without asking?** The concrete
+   proceed-list, in the project's real skills and commands — every entry a
+   routine action the safety invariants do not gate. → `autonomy.md`.
 
 Runtime artifacts (`agenda.md`, `intake/`, the workstream dirs, both
 `CHANGELOG.md`/`LOG.md`, `decisions.md`) start empty; the agenda seeds from

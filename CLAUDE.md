@@ -18,9 +18,9 @@ editing rules (see below).
 
 Every part of Anthill is physically split into two tiers:
 
-1. **General tier — `.claude/skills/`.** Nine orchestration skills (`supervisor`,
-   `autonomous`, `triage`, `dispatch`, `dispatch-loop`, `dispatch-receive`,
-   `expedite`, `escalate`, `wake-up`). Portable roles/flows/invariants. In a
+1. **General tier — `.claude/skills/`.** Ten orchestration skills (`supervisor`,
+   `autonomous`, `triage`, `submit`, `dispatch`, `dispatch-loop`,
+   `dispatch-receive`, `expedite`, `escalate`, `wake-up`). Portable roles/flows/invariants. In a
    *consumer* install these are copied **verbatim and never locally edited** —
    local divergence across installations is the exact failure mode the split
    prevents; upgrading = replacing skill files.
@@ -44,10 +44,11 @@ Because this is the upstream source, not a consumer:
   template character — do not fill them with concrete values as if configuring a
   real project. The Nodachi worked examples in comments teach the *shape* of an
   adaptation and must stay marked as examples, never promoted to defaults.
-- **Two sanctioned consumer adaptations** exist to the general tier (documented in
-  `INSTALLATION.md` Step 2): the `autonomous` skill's proceed-list and its
-  decisions-log path. Everything else in the general tier is byte-identical across
-  installations.
+- **The general tier is byte-identical across installations — no exceptions.**
+  Every skill copies verbatim; nothing in `.claude/skills/*` is locally edited
+  in a consumer. Per-project autonomy inputs (the proceed-list and decisions-log
+  path) live in `.anthill/autonomy.md`, which the `autonomous` skill loads at
+  invocation — config, not a skill edit.
 
 ## The mechanisms (what the skills orchestrate)
 
