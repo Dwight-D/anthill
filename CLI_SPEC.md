@@ -1,9 +1,16 @@
-# `anthill-cli` — interface specification
+# `anthill` — bootstrapping CLI specification
 
-The companion CLI for the Anthill agent-harness framework. This is the durable,
-self-contained contract the [`anthill-cli`](https://github.com/Dwight-D/anthill-cli)
-repository builds against. It states what each command does and why; it does not
-prescribe Go package layout.
+The companion CLI for the Anthill agent-harness framework, **bootstrapping
+surface**. This is the durable, self-contained contract the
+[`anthill-cli`](https://github.com/Dwight-D/anthill-cli) repository builds
+against for install-time and integrity operations. It states what each command
+does and why; it does not prescribe Go package layout. The binary is invoked as
+`anthill`.
+
+The runtime schema-owner surface (`backlog`, `esc`) is a separate initiative
+specified in that repo's `docs/CLI_INTERFACE_SPEC.md`; this document covers only
+bootstrapping, integrity, and sync. The two surfaces ship in one binary — see
+"Two roles of one binary" below.
 
 ## What the CLI is for
 
@@ -19,8 +26,6 @@ are purely mechanical and where determinism protects a framework invariant:
 2. **Integrity & upgrade** — detect local edits to general-tier skills, and
    apply downstream syncs, turning the framework's "flag upstream, don't fork"
    and "sync downstream" discipline into commands.
-3. **Schema ownership** (later phase) — be the sole writer of backlog and
-   escalation frontmatter, invariant-checking every write.
 
 The CLI is never a hard dependency: everything mechanical it does is also
 documented as a manual procedure in `INSTALLATION.md`. It is an accelerator and
@@ -34,156 +39,153 @@ a guarantee, not a gate.
   procedure.
 - **Mechanical only.** The CLI never makes a derivation decision. It copies,
   stamps, validates, and hands off. Judgment stays with the agent and user.
-- **Idempotent and non-destructive.** Re-running a command converges; it never
-  overwrites derived config or user edits without an explicit `--force`.
+- **Idempotent and non-destructive.** Re-running converges; nothing overwrites
+  derived config or user edits without an explicit `--force`.
 - **Pinned provenance.** The embedded template corresponds to a tagged upstream
-  release. Every scaffold stamps that version into `.anthill/framework.md` so
-  `sync` and `doctor` have a baseline.
+  release. Every scaffold stamps that ref into `.anthill/framework.md` so `sync`
+  and `doctor` have a baseline.
 
 ## The embedded template
 
 The CLI embeds the framework template (the `.claude/skills/`, `.anthill/`,
-`tools/`, and `CLAUDE.template.md` payload) at a **tagged upstream release** via
-`go:embed`. This makes `scaffold` work offline and guarantees the verbatim copy.
-CI in the CLI repo re-syncs the embedded payload from the upstream `anthill`
-repo on each tagged release; `anthill-cli version` reports which upstream ref is
-embedded. The upstream ref is what gets stamped as `synced-through` in
-`.anthill/framework.md`.
+`tools/`, `.gitignore`, and `CLAUDE.template.md` payload) at a **tagged upstream
+release** via `go:embed`. This makes `scaffold` work offline and guarantees the
+verbatim copy. CI in the CLI repo re-syncs the embedded payload from the
+upstream `anthill` repo on each tagged release; `anthill version` reports which
+upstream ref is embedded. The upstream ref is what gets stamped as
+`synced-through` in `.anthill/framework.md`.
+
+## Global conventions
+
+Shared with the runtime surface (`docs/CLI_INTERFACE_SPEC.md` §2):
+
+- **`--json`** on every command for machine-readable output; human tables
+  otherwise.
+- **Exit-code table:** 0 ok · 1 internal · 2 usage · 3 validation · 4 not-found
+  · 5 conflict · 6 precondition.
+- **stdout/stderr split:** results to stdout, diagnostics to stderr.
+- The bootstrapping commands are **idempotent and non-destructive**: re-running
+  converges, and nothing overwrites derived config or user edits without an
+  explicit `--force`.
 
 ---
 
-## Command surface
+## Commands
 
-### Phase 1 — Bootstrap (build first)
+### `anthill bootstrap [--open]`
 
-#### `anthill-cli bootstrap [--open]`
+Pure redirect; the headline entrypoint. Prints the canonical `BOOTSTRAP.md` URL
+plus a compact agent-directed preamble ("You are installing Anthill. Read this
+document, run `anthill scaffold`, then drive the derivation session with the
+user."). Zero side effects — safe to run in any directory, in or out of a repo.
 
-Pure redirect; the headline command. Prints the `BOOTSTRAP.md` entrypoint
-pointer plus a compact agent-directed preamble ("You are installing Anthill.
-Read this, run `scaffold`, then drive the derivation session per
-`INSTALLATION.md` §3–6"). **Zero side effects** — safe to run anywhere.
+- **Flags.** `--open` opens the URL in the platform browser (`start` on Windows,
+  `open` on macOS, `xdg-open` on Linux) instead of printing.
+- **`--json`.** `{ "entrypoint": "<url>", "preamble": "<text>" }`.
+- **Exit codes.** 0 always (1 only if `--open` fails to launch a browser).
+- Does **not** embed the install procedure — the fetched Markdown is
+  authoritative so instructions cannot drift from the binary.
 
-- `--open` opens the entrypoint URL in the default browser instead of only
-  printing it.
-- Exit 0 always (it is informational).
+### `anthill scaffold [--into <dir>] [--force] [--dry-run]`
 
-Rationale: matches the "run `anthill-cli bootstrap` and follow the instructions"
-usage — the user says one line, the agent lands on the authoritative doc, and
-the doc (not the binary) carries the procedure so it can never go stale.
+The mechanical install. Into `<dir>` (default: current directory) writes, from
+the embedded pinned template: the nine general-tier skills verbatim, the
+`.anthill/` placeholder tree (quote-blocks intact) with empty runtime dirs,
+`CLAUDE.template.md`, `tools/`, and `.gitignore`; then stamps
+`.anthill/framework.md` `synced-through` with the embedded ref + install date.
 
-#### `anthill-cli scaffold [--into <dir>] [--force] [--dry-run]`
+- **Preconditions.** Must run inside a git repository (exit 6 otherwise).
+- **Non-destructive rule.** For each target path: write if absent; rewrite if
+  present **and byte-identical to the pinned template** (an un-derived
+  placeholder or an unmodified skill — safe); **refuse** (exit 6) if present and
+  **differs** from the template (already derived or user-edited) unless
+  `--force`. `--force` overwrites differing files.
+- **Flags.** `--into <dir>` target root; `--force` overwrite differing files;
+  `--dry-run` compute and print the manifest without writing.
+- **Output.** A written / skipped(identical) / refused(differs) manifest, then
+  the next agent step ("now derive `.anthill/` with the user — see
+  `INSTALLATION.md` Steps 3–6"). `--json`: `{ "written": [...], "skipped":
+  [...], "refused": [...], "ref": "<tag>" }`.
+- **Exit codes.** 0 success (including a clean `--dry-run`); 3 if any path was
+  refused (differs, no `--force`); 6 not in a git repo.
 
-The mechanical install — INSTALLATION.md **Step 2** plus the empty-skeleton part
-of **Step 3**. Writes into `<dir>` (default: current directory):
+### `anthill version`
 
-- `.claude/skills/*` — the nine general-tier skills, **verbatim** from the
-  embedded pinned template.
-- `.anthill/` — the placeholder config tree (`framework.md`, `resources.md`,
-  `decisions.md`, `supervisor/`, `backlog/`, `escalations/`) with template
-  quote-blocks intact, plus empty runtime dirs (`.gitkeep`).
-- `CLAUDE.template.md` and `tools/` (`supervise.sh` / `.ps1`).
-- Stamps `.anthill/framework.md` `synced-through` with the embedded upstream ref
-  + install date.
+Prints the CLI's own version and the embedded upstream template ref (tag/commit)
+— the value an agent records as `synced-through` on a manual install.
 
-Behavior:
+- **`--json`.** `{ "version": "<cli-version>", "template_ref": "<tag>" }`.
+- **Exit codes.** 0.
 
-- **Refuses without `--force`** if it would overwrite a file that differs from
-  the pinned template — i.e. anything the user has already derived or edited.
-  Un-derived placeholders and byte-identical skills are safe to rewrite.
-- Must be run inside a **git repository** (mirrors the prerequisite); refuse with
-  a clear message otherwise.
-- Prints a **manifest** of files written / skipped / refused, then the next
-  agent step ("now drive `INSTALLATION.md` §3–6 with the user").
-- `--dry-run` prints the manifest without writing.
-- `--into` targets a directory other than the working directory.
+### `anthill doctor [--strict]`
 
-#### `anthill-cli version`
+One `doctor` covering both roles, reported as two labeled sections. Read-only.
 
-Prints the CLI version and the **embedded upstream template ref** (tag/commit).
-The agent uses the latter as the value to record in `.anthill/framework.md`.
+**Section A — install integrity** (this spec):
 
-### Phase 2 — Integrity & upgrade (build second)
+- **skill integrity** — each installed `.claude/skills/*` is byte-identical to
+  the embedded pinned version. Any diff is flagged as an illegal local edit to a
+  general-tier skill (the exact divergence the two-tier split prevents). The two
+  sanctioned `autonomous` adaptation points — the proceed-list and the
+  decisions-log path — are recognized and exempted.
+- **structure** — the expected `.anthill/` tree is present.
+- **derivation status** — which `.anthill/` files still hold template
+  quote-blocks / `<angle-bracket>` fill-ins (i.e. remain un-derived). Reported
+  as information, not a hard failure, except under `--strict`.
+- **sync status** — installed `synced-through` vs the embedded ref (up-to-date /
+  behind).
 
-These make the two-tier discipline enforceable rather than remembered.
+**Section B — runtime data integrity** (from `docs/CLI_INTERFACE_SPEC.md`):
+`.anthill/` discoverable, required config present, `workstreams.md` sweep-order
+names existing directories, `backlog validate --strict` clean, escalation
+records well-formed, no answered-but-unapplied escalations.
 
-#### `anthill-cli doctor [--strict]`
+- **Flags.** `--strict` — exit non-zero on any skill diff, any remaining
+  placeholder, or any Section B failure (CI use).
+- **`--json`.** `{ "ok": bool, "checks": [ { "section", "name", "ok",
+  "detail" } ] }`.
+- **Exit codes.** 0 healthy; 3 on an integrity problem (skill diff, structure
+  gap, Section B failure; plus remaining placeholders under `--strict`).
+- Serves `INSTALLATION.md` Step 6 and ongoing discipline.
 
-Verifies an existing install and reports:
+### `anthill sync [--dry-run] [--force]`
 
-- **Skill integrity** — each installed `.claude/skills/*` is **byte-identical**
-  to the embedded pinned version. Any diff is flagged as an *illegal local edit
-  to a general-tier skill* — the exact divergence the two-tier split exists to
-  prevent. (The two sanctioned `autonomous` adaptation points — the proceed-list
-  and the decisions-log path — are recognized and exempted.)
-- **Structure** — the expected `.anthill/` tree exists.
-- **Derivation status** — which `.anthill/` files still contain template
-  quote-blocks / `<angle-bracket>` fill-ins (i.e. un-derived), so an installer
-  can see what remains.
-- **Sync status** — installed `synced-through` vs the embedded ref.
+Realizes `INSTALLATION.md`'s "Sync downstream". Diffs the installed general-tier
+skills against the (newer) embedded version, re-copies changed skills verbatim,
+and bumps `.anthill/framework.md` `synced-through` to the embedded ref. Touches
+no other `.anthill/` config.
 
-`--strict` exits non-zero on any skill diff or remaining un-derived placeholder
-(for CI use). Serves INSTALLATION.md **Step 6** and ongoing discipline.
-
-#### `anthill-cli sync [--dry-run] [--force]`
-
-Realizes INSTALLATION.md "Sync downstream". Diffs the installed general-tier
-skills against a newer embedded version, **re-copies changed skills verbatim**
-(preserving the sanctioned `autonomous` adaptation points — never clobber the
-derived proceed-list), and bumps `.anthill/framework.md` `synced-through`. Never
-touches `.anthill/` config other than the sync-state stamp. `--dry-run` shows
-the diff without applying.
-
-### Phase 3 — Schema owner (design later, separate from bootstrap)
-
-The Step-5 "schema-owner CLI": the sole writer of backlog/escalation
-frontmatter, invariant-checking every write and owning id generation. Skills
-reference it only through `.anthill/backlog/bindings.md`, so adopting it later is
-a **bindings edit, not a skill edit**. The verb shape below matches the command
-sketch already in `backlog/bindings.md` — keep them in lockstep.
-
-```
-anthill-cli backlog new --title "…" --value "…" [--source "…"] [--backlog <hint>]
-anthill-cli backlog list [--workstream <ws>] [--untriaged] [--ready]
-anthill-cli backlog set <id> workstream=<ws> key=value …     # workstream change moves the file
-anthill-cli backlog next [--workstream <ws>]                 # default: sweep order
-anthill-cli backlog claim <id>|--next [--workstream <ws>] [--force]
-anthill-cli backlog close <id> --done|--discard "…"|--remove "…"|--block "…"
-anthill-cli backlog validate [--strict]
-
-anthill-cli escalation new --to <tier> --question "…" [--item <id>]
-anthill-cli escalation list [--to <tier>] [--open]
-anthill-cli escalation answer <id> --decision "…"
-anthill-cli escalation close <id>
-```
-
-Invariants this tier must uphold (from the framework contracts):
-
-- **Sole writer.** When installed, it is the ONLY writer of item frontmatter;
-  sender skills (`dispatch`, `dispatch-loop`) call it, workers never write queue
-  state.
-- **Id scheme.** Filename = id = kebab slug of the title, ≤50 chars, unique
-  across `intake/` and all workstream dirs, numeric suffix on collision, never
-  changes once assigned (including the intake→workstream move).
-- **Ready = `status: approved` with a non-empty `verify`.** `validate` enforces
-  the full per-item schema in `backlog/bindings.md`.
+- **Preserves the sanctioned `autonomous` adaptations** — the derived
+  proceed-list and decisions-log path are never clobbered; only the surrounding
+  skill text is updated. If an upstream change conflicts with those adaptation
+  regions, `sync` reports the conflict and leaves the file unchanged (exit 3)
+  rather than guessing — resolve manually or re-derive.
+- **Flags.** `--dry-run` show the skill-level diff without applying; `--force`
+  apply even when a skill has an unexpected local edit (overwrites the local
+  edit — the diff is shown first).
+- **`--json`.** `{ "updated": [...], "unchanged": [...], "conflicts": [...],
+  "from_ref": "<old>", "to_ref": "<new>" }`.
+- **Exit codes.** 0 applied (or clean `--dry-run`); 3 on an unresolved
+  conflict without `--force`.
 
 ---
 
-## The bootstrap loop (both directions)
+## Two roles of one binary
 
-The CLI and the entrypoint doc bootstrap each other, so an agent reaches a
-working install from either starting point.
+The `anthill` binary carries two distinct responsibilities; keep them
+conceptually separate:
 
-**From the CLI** (user has it): `anthill-cli bootstrap` → prints the
-`BOOTSTRAP.md` pointer → agent fetches it → doc says run `scaffold`, then derive.
+1. **Bootstrapping / integrity** (this spec) — `bootstrap`, `scaffold`,
+   `version`, `doctor` §A, `sync`. Install-time and upgrade; makes the two-tier
+   "copy verbatim, don't fork" discipline enforceable rather than remembered.
+2. **Schema ownership** (`docs/CLI_INTERFACE_SPEC.md`) — `backlog`, `esc`, and
+   `doctor` §B. Runtime; the sole writer of backlog/escalation record
+   frontmatter, invariant-checking every write. Skills reference it only through
+   `.anthill/backlog/bindings.md`, so adopting it is a bindings edit, not a
+   skill edit.
 
-**From the link** (no CLI): user hands the agent the raw `BOOTSTRAP.md` URL → its
-Step 1 forks on whether `anthill-cli`/Go is present → agent installs the CLI and
-runs `scaffold`, or falls back to the manual copy in `INSTALLATION.md` §2 → then
-derives.
-
-Either way the mechanical result is byte-identical and the derivation session is
-the same.
+`doctor` is the one command spanning both roles, reported as two labeled
+sections.
 
 ## Out of scope
 

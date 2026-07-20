@@ -32,21 +32,21 @@ Installing has two halves, and the split is the whole point:
 
 Pick the first branch that applies.
 
-**A. `anthill-cli` is installed** (check: `anthill-cli version`):
+**A. `anthill` is installed** (check: `anthill version`):
 ```
-anthill-cli scaffold
+anthill scaffold
 ```
 This writes the general-tier skills verbatim, the `.anthill/` placeholder
 config tree, `CLAUDE.template.md`, and the launcher, all pinned to a known
 framework version it stamps into `.anthill/framework.md`. It prints a manifest
 of what it wrote. Then go to Step 2.
 
-**B. `anthill-cli` is not installed, but Go is** (check: `go version`):
+**B. `anthill` is not installed, but Go is** (check: `go version`):
 ```
-go install github.com/Dwight-D/anthill-cli@latest
-anthill-cli scaffold
+go install github.com/Dwight-D/anthill-cli/cmd/anthill@latest
+anthill scaffold
 ```
-If `anthill-cli` is not on `PATH` after install, it is under Go's bin
+If `anthill` is not on `PATH` after install, it is under Go's bin
 directory (`go env GOBIN`, else `$(go env GOPATH)/bin`). Then go to Step 2.
 
 **C. Neither** — do the mechanical copy by hand. Follow
@@ -79,6 +79,6 @@ starting line and tells you which steps a tool already did for you.
 
 ## The CLI, in one line
 
-`anthill-cli bootstrap` prints a pointer back to this file — so a user can say
-"run `anthill-cli bootstrap` and follow the instructions" and you land here. The
+`anthill bootstrap` prints a pointer back to this file — so a user can say
+"run `anthill bootstrap` and follow the instructions" and you land here. The
 full command surface is specified in [`CLI_SPEC.md`](CLI_SPEC.md).

@@ -104,8 +104,10 @@ Because this is the framework home, not a consumer:
   and routes into `INSTALLATION.md`.
 - `INSTALLATION.md` — the consumer adoption procedure (also the spec for what the
   `.anthill/` templates must support).
-- `CLI_SPEC.md` — the `anthill-cli` companion-tool interface contract (bootstrap
-  redirect, verbatim scaffold, integrity/sync, schema-owner backlog verbs).
+- `CLI_SPEC.md` — the `anthill` companion-CLI bootstrapping interface contract
+  (bootstrap redirect, verbatim scaffold, version, doctor, sync). The runtime
+  schema-owner surface (backlog/escalation) is specified separately in the CLI
+  repo.
 - `.anthill/framework.md` — provenance and downstream sync procedure.
 - `.anthill/backlog/workstreams.md` + `bindings.md` — the backlog contract and
   per-item frontmatter schema.
