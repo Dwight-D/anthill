@@ -11,8 +11,14 @@
   "Anthill", its mechanism nodes, the Installation guide, and the propagation
   pair Anthill Feedback + Anthill Changelog). Where the source repo is
   reachable, its `.claude/skills/` are the canonical general-tier texts.
-- **synced-through:** <install date — the Anthill Changelog date this repo is
-  current against>
+- **synced-through:** <the upstream framework ref this install is current
+  against — a tag/commit of the `anthill` repo when scaffolded by
+  `anthill-cli` (it stamps this automatically); otherwise the Anthill Changelog
+  date for a manual install>
+- **installed-with:** <`anthill-cli <version>` if the CLI scaffolded this
+  install, else `manual`. `anthill-cli doctor` compares the general-tier skills
+  against this ref to detect local divergence; `anthill-cli sync` re-copies
+  changed skills verbatim and bumps `synced-through`.>
 
 ## Two-tier discipline (how this installation stays upgradeable)
 

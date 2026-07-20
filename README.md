@@ -62,9 +62,14 @@ Adopting Anthill ≈ *copy the skills, derive the config*. Upgrading it ≈
 .claude/skills/     GENERAL TIER — copy verbatim into an adopting project
 .anthill/           SPECIFIC TIER — placeholder config templates to derive
 tools/              launcher scripts (supervise.sh / .ps1)
+BOOTSTRAP.md        agent entrypoint — the single link to start an install
 INSTALLATION.md     the adoption guide
+CLI_SPEC.md         interface contract for the anthill-cli companion tool
 CLAUDE.template.md  starter for the project's always-on instruction file
 ```
+
+To start an install, point an agent at [`BOOTSTRAP.md`](BOOTSTRAP.md) (or run
+`anthill-cli bootstrap`, which redirects there).
 
 The `.anthill/` files in this template are **placeholders** — each marks what
 to swap for your own domain concepts. The `.claude/skills/` files are the real

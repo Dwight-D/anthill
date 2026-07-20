@@ -17,6 +17,17 @@ bindings — derive your own;** the worked examples in this template's config
 files (and in the framework's mechanism nodes) teach the shape of an
 adaptation, not its content.
 
+> **Agent entrypoint.** If you arrived here from a link or from
+> `anthill-cli bootstrap`, [`BOOTSTRAP.md`](BOOTSTRAP.md) is the one-page start:
+> it gets the framework onto disk (via `anthill-cli scaffold` or a manual copy)
+> and then routes you into the derivation steps below.
+
+> **Mechanical vs. judgment.** Steps 1–2 and the *empty skeleton* of Step 3 are
+> **mechanical** — a verbatim copy plus scaffolding, which `anthill-cli scaffold`
+> does deterministically (see [`CLI_SPEC.md`](CLI_SPEC.md)). Steps 3–6 are
+> **judgment** — decisions only the user can make. If the CLI already scaffolded,
+> skip to Step 3 and derive; the copy in Step 2 is done.
+
 ## Prerequisites
 
 - An agent harness with: skill/command files loaded on invocation, spawnable
@@ -44,6 +55,10 @@ never-auto types, the sender-owns-queue-state rule, the lost-message
 invariant).
 
 ## Step 2 — Install the general-tier skills (verbatim)
+
+> **Mechanical — `anthill-cli scaffold` does this.** If the CLI already
+> scaffolded, this copy is done and byte-identical; verify with
+> `anthill-cli doctor` and move to Step 3. Do it by hand only on the manual path.
 
 Copy the nine skills from this template's `.claude/skills/` into the new
 project's skills directory:
