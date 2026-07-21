@@ -39,7 +39,7 @@ latency; they may never carry an obligation that exists nowhere else.**
 ## Controller state model
 
 Everything a controller relies on across turns lives in durable state outside
-its window, in three categories with distinct trust rules:
+its window, in categories with distinct trust rules:
 
 - **Intent** — what the user wants (goals, directives, constraints).
   Human-owned, authoritative, changed only when the user changes it (the
@@ -50,6 +50,16 @@ its window, in three categories with distinct trust rules:
   before acting); never trusted from a prior turn's read.
 - **Control** — a durable pause/stop/resume flag for the controller itself,
   read on every drain (see *Durable control* below).
+- **Derived understanding** — expensive conclusions about the *stable
+  substrate* (the shape of a module, a map of a large file). Slow-changing
+  relative to the work. Cacheable, under the validity contract below.
+
+The governing rule across categories: **cache derived understanding; always
+re-derive position.** Position is cheap to re-read and catastrophic to get
+wrong (a stale position is how you double-dispatch an item another tier took —
+this is why *Refresh before acting* re-reads it every wake-up). Understanding
+is expensive to re-derive and safe to reuse *only if* you can cheaply detect
+when it went stale.
 
 A **progress ledger** captures the one piece of position no other durable
 source records: a controller's place in a *framed* unit of work — an ordered
@@ -58,6 +68,50 @@ cold successor rehydrates its cursor from the ledger, losing no ordering or
 framing. Bare unordered queue-work needs no ledger — its position rehydrates
 from the queue itself. The ledger holds position only: never a unit's content
 (that lives in the unit), never findings.
+
+## Distillation cache (derived understanding, reused safely)
+
+Re-deriving the same expensive understanding wastes tokens twice over: in
+**time**, when a rehydrating controller re-reads the same large stable sources
+each cold start; in **space**, when parallel agents each independently read and
+reason over the same files. A distillation cache derives understanding once and
+lets it be consumed many times — across turns and across agents — without going
+stale.
+
+Safety comes from **provenance, not exclusivity.** Never assume "nobody else
+touched it": the work's own agents mutate the substrate — after a worker commits
+to file X, any distillation of X is stale by construction. So every distillation
+note carries three things:
+
+- **content** — the distilled understanding.
+- **provenance** — the source(s) it was derived from (paths / scope).
+- **a validity stamp** — a cheap signal of whether those sources moved: a git
+  SHA, mtime, or content hash ("as of commit `abc123`").
+
+A consumer (a rehydrating controller *or* a peer agent entering the territory)
+runs a **cheap check first**: has any source moved past the stamp? Unchanged →
+trust the note, skip the expensive re-read. Changed → re-derive, refresh the
+note and stamp. The expensive read happens only on a real miss. **A cache is
+not a home**: the source file remains the authoritative home of the fact; the
+note is a derived view that announces its provenance and defers to source on
+any conflict — never the reverse.
+
+Two consumption patterns:
+
+- **Rehydrate lazily.** A cold controller reads its spine (bindings → intent →
+  ledger cursor) and then pulls only what its *next action* needs, consulting
+  distillation notes for stable understanding instead of eagerly re-reading
+  large sources. Most rehydration waste is eager re-derivation, not a missing
+  cache.
+- **Distill-once-consume-many.** When agents must share territory, one distills
+  it (with provenance) and the rest consume the note, spot-checking only what
+  they specifically need — rather than each paying the full read. The cheaper
+  first move is still to *not* collide (serial posture, skip-colliding-
+  territory); the cache is the mitigation when genuine parallelism is
+  unavoidable.
+
+Only *understanding* belongs in the cache. Position ("item 3 is in-progress",
+queue depth) is never cached — it is always re-derived.
 
 ## The protocol (on EVERY wake-up, before other work)
 

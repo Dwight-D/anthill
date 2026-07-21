@@ -83,8 +83,11 @@ through permission prompts.
   related ones.
 - Brief workers to offload large/exploratory reads to throwaway subagents
   that return conclusions only.
+- Before multiple workers touch the same territory, distill it once and hand
+  them the note (see *Investigation scratchpad & distillation notes*) — one
+  provenance-stamped read beats each worker re-reading the same large files.
 
-## Investigation scratchpad
+## Investigation scratchpad & distillation notes
 
 When you spawn a subagent to investigate or analyze and consume only its
 conclusion, the reasoning must not be lost with the subagent's window.
@@ -97,6 +100,17 @@ inline and persist it to the scratchpad yourself. When a
 conclusion drives a decision the user might question, reference the
 scratchpad file so the reasoning can be audited or a false conclusion
 troubleshot later.
+
+When the conclusion is **reusable understanding of a stable substrate** (a map
+of a large file, a subsystem's shape), make the note a **distillation note**
+per the `wake-up` distillation-cache contract: stamp it with its provenance
+(the sources it distilled) and a cheap validity signal (a git SHA / mtime /
+hash). It is then safe to reuse instead of re-deriving — hand its path to
+workers sharing that territory (distill-once-consume-many) and consult it on
+your own rehydration, each consumer cheaply re-checking the stamp before
+trusting it and re-deriving on a miss. The note is a derived view, not a home:
+source wins on conflict, and understanding is cached this way but position
+never is.
 
 ## Exclusive-resource arbitration
 
