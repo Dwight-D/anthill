@@ -18,9 +18,9 @@ editing rules (see below).
 
 Every part of Anthill is physically split into two tiers:
 
-1. **General tier — `.claude/skills/`.** Ten orchestration skills (`supervisor`,
+1. **General tier — `.claude/skills/`.** Eleven orchestration skills (`supervisor`,
    `autonomous`, `triage`, `submit`, `dispatch`, `dispatch-loop`,
-   `dispatch-receive`, `expedite`, `escalate`, `wake-up`). Portable roles/flows/invariants. In a
+   `dispatch-receive`, `expedite`, `escalate`, `wake-up`, `sync`). Portable roles/flows/invariants. In a
    *consumer* install these are copied **verbatim and never locally edited** —
    local divergence across installations is the exact failure mode the split
    prevents; upgrading = replacing skill files.
@@ -66,6 +66,10 @@ Because this is the upstream source, not a consumer:
   (worker → dispatcher → supervisor → user) and back down as state.
 - **Wake-up protocol** (`wake-up`) — the reliability contract every controller tier
   runs on each wake-up: drain signals, sweep escalations, refresh before acting.
+- **Sync** (`sync`) — advance an install's general-tier skills to the CLI's
+  embedded template ref via `anthill sync`, reconciling any local-edit conflict
+  by reverting the skill to upstream (rescuing trapped config into `.anthill/`
+  first); the consumer-side of "upgrading = replacing skill files."
 
 ## Recurring invariants (respect these when editing any contract)
 

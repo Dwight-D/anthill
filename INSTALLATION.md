@@ -65,7 +65,7 @@ invariant).
 > scaffolded, this copy is done and byte-identical; verify with
 > `anthill doctor` and move to Step 3. Do it by hand only on the manual path.
 
-Copy the ten skills from this template's `.claude/skills/` into the new
+Copy the eleven skills from this template's `.claude/skills/` into the new
 project's skills directory:
 
 | Skill | Role |
@@ -80,8 +80,9 @@ project's skills directory:
 | `expedite` | User-invoked triage+approve fast lane |
 | `escalate` | Durable escalation records: raise / receive / answer / apply |
 | `wake-up` | Controller wake-up protocol; referenced by supervisor/dispatch-loop/escalate |
+| `sync` | Advance the general tier to the CLI's embedded ref via `anthill sync`; reconcile conflicts |
 
-**All ten skills copy verbatim — no exceptions.** There is nothing to edit in a
+**All eleven skills copy verbatim — no exceptions.** There is nothing to edit in a
 skill during install. The one thing the `autonomous` skill needs per project —
 its proceed-list and decisions-log path — lives in `.anthill/autonomy.md`, which
 the skill loads at invocation; you derive that file in Step 3 like any other

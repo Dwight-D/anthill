@@ -7,6 +7,17 @@ binding — `anthill sync` automates the skill re-copy). Newest first.
 
 ## Unreleased
 
+- **Add the `sync` skill (eleventh general-tier skill).** A discoverable
+  general-tier skill wrapping `anthill sync`: advance an install's `.claude/skills/`
+  to the CLI's embedded template ref and reconcile any conflict. Because
+  general-tier skills carry no adaptation regions (all per-project config lives in
+  `.anthill/`), a sync conflict is an illegal local edit to a skill; the skill
+  encodes reverting it to upstream, rescuing any trapped project config into its
+  `.anthill/` home (e.g. a legacy proceed-list into `.anthill/autonomy.md`) before
+  overwriting. General-tier skill count is now eleven.
+  - **Consumer action:** re-copy `.claude/skills/sync/` verbatim (new directory;
+    `anthill sync` copies it automatically). No `.anthill/` change required.
+
 - **Extract autonomy config to `.anthill/autonomy.md`; the `autonomous` skill
   is now byte-identical across installs.** The proceed-list and decisions-log
   path — previously in-place adaptation regions inside the skill — move to a new

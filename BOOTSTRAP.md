@@ -55,7 +55,7 @@ to Step 2.
 
 **C. Neither** — do the mechanical copy by hand from the Anthill template
 repository (the source of this document). Copy both tiers verbatim into the
-target project: `.claude/skills/` (the ten general-tier skills) and the
+target project: `.claude/skills/` (the eleven general-tier skills) and the
 `.anthill/` placeholder config tree, plus `CLAUDE.template.md`, `tools/`, and
 `.gitignore`. See [`INSTALLATION.md`](INSTALLATION.md) **Step 2**. Then go to
 Step 2 below.

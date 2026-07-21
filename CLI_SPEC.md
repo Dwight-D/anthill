@@ -92,7 +92,7 @@ user."). Zero side effects — safe to run in any directory, in or out of a repo
 ### `anthill scaffold [--into <dir>] [--force] [--dry-run]`
 
 The mechanical install. Into `<dir>` (default: current directory) writes, from
-the embedded pinned template: the ten general-tier skills verbatim, the
+the embedded pinned template: the eleven general-tier skills verbatim, the
 `.anthill/` placeholder tree (quote-blocks intact) with empty runtime dirs,
 `CLAUDE.template.md`, `tools/`, and `.gitignore`; then stamps
 `.anthill/framework.md` `synced-through` with the embedded ref + install date.

@@ -2,16 +2,23 @@
 
 **An agentic harness framework — a template you adopt in your own project.**
 
-Anthill is the framework for harnessing agents around a long-lived project:
+[Anthill](https://github.com/Dwight-D/anthill) is the framework for harnessing agents around a long-lived project:
 how work is raised, cataloged, triaged, and dispatched; how agents
 orchestrate other agents; and how autonomy is granted and bounded. It is
 transported as **structured human language** — skills a capable agent reads
 and follows, plus a configuration directory you derive for your environment —
 not as a program you run.
 
+## Installation
+
 This repository is a **template**. Clone it (or copy its two tiers into an
 existing repo), then derive the project-specific layer with the user. See
 [`INSTALLATION.md`](INSTALLATION.md).
+
+### Upgrades
+
+You can use `anthill sync` to fetch the latest files in order to upgrade. There
+may sometimes be some friction when breaking config changes are released.
 
 ## Core Features
 
