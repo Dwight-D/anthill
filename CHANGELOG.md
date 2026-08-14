@@ -7,6 +7,30 @@ binding — `anthill sync` automates the skill re-copy). Newest first.
 
 ## Unreleased
 
+- **Rewrite the controller skills for concision; encode the yield-by-cause
+  rule and worker-liveness safety.** `wake-up`, `supervisor`, and
+  `dispatch-loop` are rewritten ~40% shorter in plain language, one home per
+  concept (the progress ledger is now explained only in `dispatch-loop`).
+  Substantive changes riding along: yield discipline is stated by cause —
+  yield when out of work, never merely to report; acknowledgements and status
+  land in durable files (#6). A missing or ambiguous completion signal is
+  never evidence of worker death, and destructive recovery (resetting paths)
+  from a suspected orphan is forbidden — escalate instead (#7, mitigation
+  half). A missing control flag reads as `run` (#4, skill-side). The
+  `autonomous` skill defers branch discipline to project config
+  (`.anthill/resources.md` / `autonomy.md`) instead of mandating a feature
+  branch. The brief template's REPORTING section now requires a
+  spawner-injected resolved reply handle and durable-state-before-signal
+  (#5, template half). Dropped as not worth their weight: message
+  timestamp-prefixing, the push-notification rule, and the
+  sequencing-dispute/reassignment micro-rules (folded into one steering
+  bullet).
+  - **Consumer action:** re-copy `wake-up`, `supervisor`, `dispatch-loop`,
+    and `autonomous` verbatim, plus the framework-invariant
+    `supervisor/brief-template.md` and `dispatch/README.md` (`anthill sync`
+    covers all of these). Optionally state a branch discipline in
+    `.anthill/resources.md` / `autonomy.md`.
+
 - **Add the `sync` skill (eleventh general-tier skill).** A discoverable
   general-tier skill wrapping `anthill sync`: advance an install's `.claude/skills/`
   to the CLI's embedded template ref and reconcile any conflict. Because
