@@ -23,7 +23,8 @@
 
 - **General tier** = the `.claude/skills/` orchestration skills (`supervisor`,
   `autonomous`, `triage`, `submit`, `dispatch`, `dispatch-loop`,
-  `dispatch-receive`, `expedite`, `escalate`, `wake-up`, `sync`). These are
+  `dispatch-receive`, `expedite`, `escalate`, `wake-up`, `rehydrate`,
+  `sync`). These are
   byte-identical to upstream — no exceptions. **Never locally edit a
   general-tier skill** — divergence across installations is the failure mode
   the two-tier split exists to prevent. Upgrading = replacing skill files.

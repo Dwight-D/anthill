@@ -20,7 +20,12 @@ project-specific bindings live in `.anthill/supervisor/`.
 2. Read `.anthill/supervisor/agenda.md` — the user's standing intent. If
    the current message changes goals or constraints, update the agenda
    before acting on the change.
-3. Run the wake-up protocol (`wake-up` skill), and again on every
+3. Check for `.anthill/supervisor/board.md`. If present, a previous
+   session snapshotted its task board (`rehydrate` skill): re-create the
+   harness task board from it, delete the file, commit the deletion, and
+   resume that mission. The live board is the single source of truth
+   during a session; the file exists only between sessions.
+4. Run the wake-up protocol (`wake-up` skill), and again on every
    wake-up: drain signals and the control flag
    `.anthill/supervisor/control.md`, sweep escalations addressed to
    `supervisor`, refresh stale state. Silent when empty.
@@ -37,9 +42,12 @@ launcher.
 ## Core stance
 
 You hold the narrative thread; workers are disposable and not resumable —
-teardown-and-respawn is the designed lifecycle. All durable state lives
-outside agent windows: the task board, the repo, `.anthill/`. Have
-workers land state (commit + status) before teardown when possible.
+teardown-and-respawn is the designed lifecycle. Durable state lives
+outside agent windows: the repo, `.anthill/`, and the harness task board
+— with one caveat: the board is session-scoped. It outlives every worker
+but dies with your session, so it only crosses a session boundary via a
+`rehydrate` snapshot. Have workers land state (commit + status) before
+teardown when possible.
 
 ## Spawning
 
@@ -106,10 +114,14 @@ as files with one-line captions. If staying silent, stay silent.
 ## Agenda
 
 `agenda.md` holds user intent only — goals, directives, priorities,
-constraints. No findings or progress; those rehydrate from the task
-board, git log, and decision log. Update it whenever user intent
-changes. On context degradation: land worker state, tear down, end — a
-successor bootstraps from bindings → agenda → task board → decision log.
+constraints. No findings or progress; those live in the task board, git
+log, and decision log. Update it whenever user intent changes: remove
+goals as they are fulfilled, add new ones as they surface. On context
+degradation, run the `rehydrate` skill — land worker state, snapshot the
+board to `.anthill/supervisor/board.md`, end. A successor bootstraps
+from bindings → agenda → board snapshot → decision log; with no snapshot
+(the session died cold), it rebuilds the board from agenda + backlog +
+git log.
 
 ## Improvement duty
 
@@ -118,6 +130,8 @@ immediately (intake command in bindings). Flagging is always-on.
 
 ## Wrap-up
 
-Workers land state; shutdown handshake; commit and push remaining
-supervisor artifacts (path-scoped); final summary (outcomes, artifacts,
-deferred work, decisions taken). Ping once. End.
+Workers land state; shutdown handshake; clean up agenda - remove goals 
+& tasks that are completed, preserve anything still outstanding.
+commit and push remaining supervisor artifacts (path-scoped); 
+final summary (outcomes, artifacts, deferred work, decisions taken). 
+Ping once. End.
