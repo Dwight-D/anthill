@@ -7,6 +7,21 @@ binding — `anthill sync` automates the skill re-copy). Newest first.
 
 ## Unreleased
 
+- **Supervisor delegation rules; user-initiated rehydrate; 150k recycle
+  threshold.** The `supervisor` skill's "Spawning" section gains two rules:
+  split a change across workers by role (implementation, test authoring,
+  test running, with the implementer reporting the API the tests need), and
+  have a subagent write distilled context for a large task before briefing
+  workers. Workers are recycled past 150k tokens (previously an unquantified
+  "heavy window"). Recycling the supervisor session is the user's call: the
+  user runs `rehydrate` when context fills up, and the `rehydrate` skill's
+  description no longer offers context degradation as a trigger for the
+  agent to load it.
+  - **Consumer action:** re-copy `.claude/skills/supervisor/` and
+    `.claude/skills/rehydrate/` verbatim (`anthill sync` covers both). An
+    install whose `.anthill/supervisor/bindings.md` states its own delegation
+    rules or recycle threshold removes the ones the skill now carries.
+
 - **Add the supervisor delegation gate: one worker, one task, enforced by a
   hook.** The `supervisor` skill's frontmatter registers a `PreToolUse`
   prompt hook on `Agent` and `SendMessage` for the rest of the session. A
