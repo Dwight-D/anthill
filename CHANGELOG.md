@@ -7,6 +7,24 @@ binding — `anthill sync` automates the skill re-copy). Newest first.
 
 ## Unreleased
 
+- **Add the supervisor delegation gate: one worker, one task, enforced by a
+  hook.** The `supervisor` skill's frontmatter registers a `PreToolUse`
+  prompt hook on `Agent` and `SendMessage` for the rest of the session. A
+  small model reads each worker brief and each message to a worker and
+  rejects one that hands a worker unrelated tasks, several tasks without a
+  `BATCH REASON` that holds, or a new task sent to a running worker without
+  one; the rejection returns to the supervisor as the tool error
+  (`continueOnBlock`). Tasks count as related only when they change the same
+  code or one cannot be verified without the other. The one-task rule moves
+  from "Worker lifecycle" into "Spawning", and the brief template's `GOAL`
+  names one task and gains a `BATCH REASON` section. Prose alone did not
+  hold: supervisors batched unrelated tasks onto one worker.
+  - **Consumer action:** re-copy `.claude/skills/supervisor/` and
+    `.anthill/supervisor/brief-template.md` verbatim (`anthill sync` covers
+    both). Requires a Claude Code version with skill-frontmatter hooks and
+    prompt hooks; under the managed setting `strictPluginOnlyCustomization`
+    the gate does not run.
+
 - **Add the `rehydrate` skill (twelfth general-tier skill): supervisor
   sessions survive recycling.** The harness task board is session-scoped — it
   outlives workers but dies with the session, so "rehydrate from the task
