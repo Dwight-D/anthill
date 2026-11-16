@@ -7,6 +7,21 @@ binding — `anthill sync` automates the skill re-copy). Newest first.
 
 ## Unreleased
 
+- **Delegation gate judges relatedness by shared information.** Work
+  belongs on one worker when it reads or changes largely the same
+  artifacts, forms one judgment over a shared set of items, or chains
+  output to input — whether or not it touches code. Tasks are counted by
+  result, not by step, so a survey → classify → rank → report brief is one
+  task. A missing `BATCH REASON` no longer rejects a brief whose parts
+  visibly share information; the gate rejects only work drawing on
+  unrelated information. The rejection message now carries a worked
+  `BATCH REASON` example, and the `supervisor` skill and brief template
+  state the required format (always present, `none` for one task, written
+  on the first send).
+  - **Consumer action:** re-copy `.claude/skills/supervisor/` and
+    `.anthill/supervisor/brief-template.md` verbatim (`anthill sync` covers
+    both).
+
 - **Supervisor delegation rules; user-initiated rehydrate; 150k recycle
   threshold.** The `supervisor` skill's "Spawning" section gains two rules:
   split a change across workers by role (implementation, test authoring,
