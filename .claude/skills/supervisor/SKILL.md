@@ -111,10 +111,18 @@ teardown when possible.
 
 1. Create one shared task per mission before spawning, with a
    self-contained description (goal, pointers, deliverables, definition
-   of done).
+   of done). Each task names its backlog item — the id it implements, or
+   `none` with a one-line reason — and the board row carries that id.
+   File one (`submit`, `--reporter supervisor`) if the work will outlive
+   this session.
 2. Spawn named background agents. Briefs follow
    `.anthill/supervisor/brief-template.md`; the first line invokes the
-   autonomy-contract skill, never restated inline.
+   autonomy-contract skill, never restated inline. A brief with an item
+   id instructs the worker to `anthill backlog claim <id> --by <agent-name>`
+   on pickup and `anthill backlog deliver <id> --by <agent-name> --evidence "…"`
+   on finish. An item that is not ready (not approved, or not `auto`)
+   gets `--force` on the claim only when the user's mission is the
+   greenlight for it.
 3. One worker carries one task — one result (a change, a report, a
    decision) and every step toward it. Work is related when it draws on
    the same information: it reads or changes largely the same artifacts
@@ -158,6 +166,18 @@ A rejection comes back as the tool error naming the unrelated parts:
 give each its own brief, or — when the parts do share information the
 brief failed to show — add the `BATCH REASON` and resend. Rewording a
 brief to hide a second task defeats the gate and breaks rule 3.
+
+### Backlog items
+
+You are the controller of every item your workers hold: you close,
+approve (only on the user's word), and release; a worker may only advance
+the item it holds (claim on pickup, deliver, block). When a worker
+reports a delivered item, read it with `anthill backlog show <id>` and
+verify its `## Evidence` against `## Acceptance` and `verify`, then
+`anthill backlog close <id> --done "<one line>"`, or
+`anthill backlog close <id> --reject "<what is missing>"` and steer the
+worker. A worker torn down mid-item → `anthill backlog release <id>` when
+nothing landed, else `anthill backlog block <id> "<reason>"`.
 
 ## Steering
 
@@ -217,17 +237,19 @@ runs the `rehydrate` skill — land worker state and preserve mission
 state by snapshotting the board to `.anthill/supervisor/board.md`. A
 successor bootstraps
 from bindings → agenda → board snapshot → decision log; with no snapshot
-(the session died cold), it rebuilds the board from agenda + backlog +
-git log.
+(the session died cold), it rebuilds the board from agenda +
+`anthill backlog list --active` + git log.
 
 ## Improvement duty
 
 Steering reveals a tooling or process gap → file a backlog item
-immediately (intake command in bindings). Flagging is always-on.
+immediately (`submit`, `--reporter supervisor`). Flagging is always-on.
 
 ## Wrap-up
 
-Workers land state; shutdown handshake; clean up agenda - remove goals 
+Workers land state; land item state — every item a task held is closed
+after verifying its evidence, blocked with a reason, or released, none
+left `in-progress` under a dead worker; shutdown handshake; clean up agenda - remove goals 
 & tasks that are completed, preserve anything still outstanding.
 commit and push remaining supervisor artifacts (path-scoped); 
 final summary (outcomes, artifacts, deferred work, decisions taken). 
