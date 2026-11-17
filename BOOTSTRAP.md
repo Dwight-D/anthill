@@ -77,8 +77,9 @@ the user:
 - **Step 4** — help the user author their always-on instruction file from
   `CLAUDE.template.md`; keep it minimal.
 - **Step 5** — optional hardening (launcher, schema-owner CLI, attention hook).
-- **Step 6** — verify: config loads, an intake → triage → dispatch round-trip
-  closes, and the escalation canary completes.
+- **Step 6** — verify: config loads, an intake → triage → approve → dispatch
+  → deliver → close round-trip lands the item in `done/`, and the escalation
+  canary completes.
 
 `INSTALLATION.md` is the authoritative procedure. This file only gets you to its
 starting line and tells you which steps a tool already did for you.

@@ -7,8 +7,10 @@ against for install-time and integrity operations. It states what each command
 does and why; it does not prescribe Go package layout. The binary is invoked as
 `anthill`.
 
-The runtime schema-owner surface (`backlog`, `esc`) is a separate initiative
-specified in that repo's `docs/CLI_INTERFACE_SPEC.md`; this document covers only
+The runtime schema-owner surface (`backlog`, `esc`) is specified in that repo:
+`docs/BACKLOG_V2_SPEC.md` (the backlog item model, lifecycle, and `backlog`
+verbs) and `docs/CLI_INTERFACE_SPEC.md` (escalation records); this document
+covers only
 bootstrapping, integrity, and sync. The two surfaces ship in one binary — see
 "Two roles of one binary" below.
 
@@ -183,11 +185,12 @@ conceptually separate:
 1. **Bootstrapping / integrity** (this spec) — `bootstrap`, `scaffold`,
    `version`, `doctor` §A, `sync`. Install-time and upgrade; makes the two-tier
    "copy verbatim, don't fork" discipline enforceable rather than remembered.
-2. **Schema ownership** (`docs/CLI_INTERFACE_SPEC.md`) — `backlog`, `esc`, and
-   `doctor` §B. Runtime; the sole writer of backlog/escalation record
-   frontmatter, invariant-checking every write. Skills reference it only through
-   `.anthill/backlog/bindings.md`, so adopting it is a bindings edit, not a
-   skill edit.
+2. **Schema ownership** (`docs/BACKLOG_V2_SPEC.md` for `backlog`,
+   `docs/CLI_INTERFACE_SPEC.md` for `esc`) — `backlog`, `esc`, and `doctor` §B.
+   Runtime; the sole writer of backlog/escalation record frontmatter,
+   guarding and stamping every transition. The skills invoke its `backlog`
+   verbs directly; `.anthill/backlog/bindings.md` summarizes them for the
+   project.
 
 `doctor` is the one command spanning both roles, reported as two labeled
 sections.

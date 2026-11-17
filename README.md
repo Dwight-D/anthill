@@ -77,7 +77,7 @@ Adopting Anthill ≈ *copy the skills, derive the config*. Upgrading it ≈
 |---|---|---|
 | **Supervisor** | `supervisor` | User → supervisor → workers orchestration. The supervisor holds the narrative thread; workers are disposable executors over durable external state (task board, repo, `.anthill/`). |
 | **Autonomy contract** | `autonomous` | The opt-in contract a worker brief invokes on line one: what to proceed on freely, what to log-and-continue, what to stop and ask. |
-| **Backlog** | `triage`, `dispatch`, `expedite` | Frictionless work intake (a title + a value), typed **workstreams**, one-file-per-item, and the triage → dispatch pipeline. Submission is dumb; all judgment lives in triage. |
+| **Backlog** | `submit`, `triage`, `dispatch`, `expedite` | Frictionless work intake (a title + a value), typed **workstreams**, one-file-per-item, and a CLI-guarded lifecycle: new → triaged → in-progress → validation → done. Submission is dumb; all judgment lives in triage; the user approves; workers claim and deliver; controllers verify evidence and close. |
 | **Dispatch loop** | `dispatch-loop`, `dispatch-receive` | An autonomous dispatcher tier beneath the supervisor that works the ready queue: select → hand off to a fresh worker → verify evidence → record → recycle. |
 | **Escalation** | `escalate` | Durable decision requests that travel up the tiers (worker → dispatcher → supervisor → user) and back down as state — immune to signal loss. |
 | **Wake-up protocol** | `wake-up` | The cross-cutting reliability contract every controller tier runs on every wake-up: drain signals, sweep escalations, refresh before acting. Encodes the lost-message invariant. |

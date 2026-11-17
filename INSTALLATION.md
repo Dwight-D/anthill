@@ -56,7 +56,7 @@ wins (samples are illustrative snapshots).
 Read [`README.md`](README.md) for the model, then skim each skill in
 `.claude/skills/`. You need the whole model before deriving config, because
 the pieces share concepts (evidence-based done, exclusive resources,
-never-auto types, the sender-owns-queue-state rule, the lost-message
+never-auto types, the controllers-own-item-state rule, the lost-message
 invariant).
 
 ## Step 2 — Install the general-tier skills (verbatim)
@@ -74,10 +74,10 @@ project's skills directory:
 | `autonomous` | The autonomy contract worker briefs invoke on line one |
 | `triage` | Dedup → route to workstream → classify per profile; proposes, never implements |
 | `submit` | Frictionless backlog intake (title + value); any mode, never triages or approves |
-| `dispatch` | Sender/handoff: claim → brief → spawn worker → verify evidence → close |
+| `dispatch` | Sender/handoff: claim → brief → spawn worker → verify delivered evidence → close |
 | `dispatch-loop` | Autonomous dispatcher tier (agent-only) |
 | `dispatch-receive` | Worker contract (agent-only; first line of dispatch worker briefs) |
-| `expedite` | User-invoked triage+approve fast lane |
+| `expedite` | User-invoked triage + fast-track lane |
 | `escalate` | Durable escalation records: raise / receive / answer / apply |
 | `wake-up` | Controller wake-up protocol; referenced by supervisor/dispatch-loop/escalate |
 | `rehydrate` | Supervisor session handoff: snapshot the task board to a durable file; a fresh session resumes via `supervisor` |
@@ -108,8 +108,11 @@ conversation with the user. Put these questions to them, in order:
 3. **What headless verification exists?** It becomes the evidence
    requirements. If none exists, flag building some as the first `dev`
    workstream item. → `supervisor/bindings.md`, `workstreams.md`.
-4. **Which change types are this domain's "permanent, cross-cutting, or
-   taste-laden" ones?** They become the workstreams' **never-auto** types.
+4. **What change types does this domain have, and which are "permanent,
+   cross-cutting, or taste-laden"?** The vocabulary becomes `change-types`;
+   the taste-laden ones become the workstreams' **never-auto** types and the
+   `never-auto-change-types` list (both in `workstreams.md` frontmatter) —
+   they never take `disposition: auto`.
 5. **What is the worker-cap derivation, and the dispatch parallelism posture?**
    Both fall out of the resource inventory. → `resources.md`.
 6. **What is the sweep order?** → `workstreams.md` frontmatter.
@@ -117,7 +120,8 @@ conversation with the user. Put these questions to them, in order:
    proceed-list, in the project's real skills and commands — every entry a
    routine action the safety invariants do not gate. → `autonomy.md`.
 
-Runtime artifacts (`agenda.md`, `intake/`, the workstream dirs, both
+Runtime artifacts (`agenda.md`, `intake/`, the workstream dirs, `done/` /
+`discarded/` (created on first close), both
 `CHANGELOG.md`/`LOG.md`, `decisions.md`, the controller control flags
 `supervisor/control.md` + `dispatch/control.md`, and the dispatcher progress
 ledger `dispatch/ledger.md`) start empty or `run`; each seeds on first use —
@@ -143,10 +147,11 @@ pointer to `.anthill/backlog/`. Keep it small.
   required because skills cannot self-escalate (harness design) and child agents
   inherit the launched mode. Adjust for your environment and name the launcher
   in `supervisor/bindings.md`.
-- **Schema-owner CLI**: when a backlog/escalation CLI is available, install it
-  and set it as the schema owner in `backlog/bindings.md`. Until then, operate
-  convention-first with care — skills reference the schema owner only through
-  bindings, so the swap later is a bindings edit, not a skill edit.
+- **`anthill` CLI as schema owner**: the backlog lifecycle — triage, claim,
+  deliver, close — runs through `anthill backlog` verbs (listed in
+  `backlog/bindings.md`), which guard, stamp, and log every transition.
+  Install the CLI before the first dispatch. Without it only intake works,
+  convention-first: item files written into `intake/` per the schema.
 - **User-attention hook**: a harness hook surfacing the count of open
   escalations addressed to `user` at session start.
 
@@ -156,15 +161,22 @@ pointer to `.anthill/backlog/`. Keep it small.
    + agenda and, on a fresh install, correctly identify anything missing
    rather than proceeding.
 2. **Intake → triage → dispatch round trip.** Submit a trivial real
-   improvement (title + value), triage it (routed, classified per profile),
-   have the user approve it, `dispatch` it; confirm the worker report's
-   evidence is verified and the item closes into the changelog.
+   improvement (`submit`: title + value) — it lands in `intake/` as
+   `status: new`. Triage it: body sections written, routed, classified per
+   profile, `disposition: auto` with a real `verify` → `status: triaged`.
+   The user approves it (`anthill backlog approve <id>`); it now shows in
+   `anthill backlog list --ready`. `dispatch` it. Pass criteria: the claim
+   stamps `claimed-by` and `session`; the worker delivers
+   (`status: validation`, `## Evidence` filled); the sender verifies that evidence
+   against `## Acceptance` and runs `close --done`; the item sits in `done/`
+   and the CHANGELOG has its line. `anthill backlog validate` is clean.
 3. **The escalation canary (mandatory).** The user approves a deliberately
-   unimplementable item; dispatch it. Pass criteria: the worker returns an
-   escalation record inline; the sender persists it to `.anthill/escalations/`
-   and blocks the item; the record reaches the user with the **Question
-   verbatim**; after the user writes `## Decision`, the next dispatch tick
-   applies it back to the item. Harness message channels may flatten (a nested
+   unimplementable `auto` item; dispatch it. Pass criteria: the worker returns
+   an escalation record inline; the sender persists it to
+   `.anthill/escalations/` and blocks the item (`escalated: <file>` in its
+   `## Log`); the record reaches the user with the **Question verbatim**;
+   after the user writes `## Decision`, the next dispatch tick applies it back
+   to the item (`unblock`, or `unblock --release`). Harness message channels may flatten (a nested
    agent's message may reach the user directly) — that is tolerated; the
    record and sweeps are the reliable layer being tested.
 
@@ -182,8 +194,10 @@ pointer to `.anthill/backlog/`. Keep it small.
   upstream Anthill repository at a newer release than `.anthill/framework.md`'s
   `synced-through` ref, then bump the ref. `anthill sync` does this
   mechanically.
-- **Posture.** Start propose-only (triage recommends, the user approves);
-  loosen per workstream as the gates earn trust.
+- **Posture.** Start propose-only: triage proposes (`dispatch: proposed`)
+  with a disposition; the user approves (`approve`) or fast-tracks
+  (`fast-track`, or the `expedite` skill); no agent approves. Loosen per
+  workstream as the gates earn trust.
 
 ## Optional: Anthill Claude mod
 
