@@ -60,7 +60,7 @@ finish and `verify` is a real headless test. When in doubt, `design`.
    It moves the item into its workstream as `status: triaged`. Triage
    proposes: `dispatch` stays `proposed` until the user approves
    (`approve` / `fast-track`), directly or via `expedite`.
-6. **Re-scan** previously triaged items whose context changed — an approval
+6. **Re-scan** already-triaged items whose context changed — an approval
    can make an open sibling redundant; re-run dedup after approvals; revisit
    `open` items and re-disposition with
    `anthill backlog set <id> disposition=…` when an approach has emerged.

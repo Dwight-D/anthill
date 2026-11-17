@@ -49,7 +49,7 @@ completion re-wake you (`wake-up`, turn-boundary discipline).
    `anthill backlog list --active --fields id,status,claimed-by,session,claimed-at`
    shows every claimed item. Items in `validation` were delivered → verify
    and close them (step 5). Items `in-progress` under a `dispatcher:` handle
-   whose worker is no longer alive, and ledger rows stuck `in-progress`
+   whose worker is dead, and ledger rows stuck `in-progress`
    behind a finished or dead worker → verify from state, then
    `anthill backlog release <id>` (nothing landed) or
    `anthill backlog block <id> "<reason>"`. A missing signal is not evidence the worker died,
