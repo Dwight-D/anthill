@@ -7,6 +7,25 @@ binding — `anthill sync` automates the skill re-copy). Newest first.
 
 ## Unreleased
 
+- **Item keys.** A backlog item is referred to by its **key** `PREFIX-N`
+  (`ANT-74`): a 2–5-letter installation prefix (`key-prefix` in the
+  `workstreams.md` frontmatter, seeded by `anthill init`) and a number the
+  CLI allocates sequentially and never reuses. Item files are
+  `NNNN-<slug>.md` (the slug is cosmetic); every verb accepts the key, the
+  bare number, or the item's `former-id`. Previously the id was the kebab
+  slug of the title and the filename `<slug>.md`. Every skill, template,
+  and adoption doc now shows keys where it shows an item id; `submit`
+  reports the created key; the brief template's ITEM section, the dispatch
+  ledger column, and escalation `item:` fields carry keys; `bindings.md`
+  carries the *Key scheme* and *Referring to items* sections; the
+  `workstreams.md` template is `schema: 3` with a `key-prefix` line.
+  Requires `anthill` CLI with backlog schema 3.
+  - **Consumer action:** upgrade the CLI, then
+    `anthill backlog migrate --key-prefix XXX` (your 2–5-letter prefix;
+    it renames item files, writes each item's `former-id`, and rewrites
+    item references in session and escalation records), then
+    `anthill sync` to re-copy the general-tier skills.
+
 - **Supervisor reporting and agenda hygiene.** User communication is brief
   executive summaries leading with actions needed, always pointing at the
   concrete artefact (investigation report, spec) and, for a decision, at
