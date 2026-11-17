@@ -7,6 +7,15 @@ binding — `anthill sync` automates the skill re-copy). Newest first.
 
 ## Unreleased
 
+- **Supervisor reporting and agenda hygiene.** User communication is brief
+  executive summaries leading with actions needed, always pointing at the
+  concrete artefact (investigation report, spec) and, for a decision, at
+  where the full context lives. The agenda is kept clean: older directives
+  go when a new goal arrives; it is a summary of current goals and next
+  steps, not a log. Worker recycle threshold is 200k tokens.
+  - **Consumer action:** re-copy `.claude/skills/supervisor/` verbatim
+    (`anthill sync`).
+
 - **Backlog v2: typed lifecycle, user dispatch gate, claim → deliver →
   close.** The skills and templates follow the `anthill` CLI's backlog v2
   contract (`anthill-cli` `docs/BACKLOG_V2_SPEC.md`; CLI 0.1.0 or later).

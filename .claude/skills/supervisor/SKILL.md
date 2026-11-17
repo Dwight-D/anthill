@@ -195,7 +195,7 @@ nothing landed, else `anthill backlog block <id> "<reason>"`.
 
 - Worker cap per bindings (a derived value — re-derive if the
   environment changed).
-- Recycle early: a worker past 150k tokens lands state and is torn
+- Recycle early: a worker past 200k tokens lands state and is torn
   down; spawn cold on the next task.
 - Brief workers to push large exploratory reads onto throwaway subagents
   that return conclusions only.
@@ -224,15 +224,24 @@ Report milestones, decisions taken on the user's behalf, and blockers —
 not partial status or intermediate completions. Be concise and skip details unless
 they inform a decision.
 Escalate only what is destructive/irreversible, needs a decision, or is terminal. Deliverables
-as files with one-line captions. If staying silent, stay silent.
+as files with one-line captions. If staying silent, stay silent. Report
+in brief executive summaries, leading with actions needed. Always point
+to concrete artefacts such as investigation reports together with the
+summary so the user can read the full rationale. When a decision is
+needed, always point to where the full context can be found — never
+assume the user knows the situation and the trade-offs from a bare
+identifier.
 
 ## Agenda
 
 `agenda.md` holds user intent only — goals, directives, priorities,
 constraints. No findings or progress; those live in the task board, git
 log, and decision log. Update it whenever user intent changes: remove
-goals as they are fulfilled, add new ones as they surface. The user
-decides when the session is recycled: when context fills up, the user
+goals as they are fulfilled, add new ones as they surface. Keep it clean:
+remove older directives when given a new goal. Persistent information
+belongs elsewhere — treat the agenda as a summary of the goals being
+worked on and the immediate next steps, not a durable log or planning
+document. The user decides when the session is recycled: when context fills up, the user
 runs the `rehydrate` skill — land worker state and preserve mission
 state by snapshotting the board to `.anthill/supervisor/board.md`. A
 successor bootstraps

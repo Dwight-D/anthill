@@ -85,8 +85,11 @@ Because this is the upstream source, not a consumer:
 - **State first, signal second.** Durable artifacts (task board, backlog items,
   escalation records, agenda) carry every obligation; harness messages are
   best-effort nudges. This "lost-message invariant" is why sweeps re-read state.
-- **Sender owns queue state.** Dispatch senders write all backlog/queue state;
-  workers (`dispatch-receive`) never write it.
+- **Controllers own item state.** Backlog state moves only through `anthill
+  backlog` verbs. Controllers (`dispatch`, `dispatch-loop`, `supervisor`, the
+  user) own `close`, `approve`, and `release`; a worker may only advance the
+  item it holds — `claim` on pickup when its brief hands it an id, `deliver`,
+  `block`.
 - **Disposable workers, durable state.** Any tier can be killed and rehydrated from
   external state; teardown-and-respawn is the designed lifecycle.
 
