@@ -7,6 +7,66 @@ binding — `anthill sync` automates the skill re-copy). Newest first.
 
 ## Unreleased
 
+- **Backlog v2: typed lifecycle, user dispatch gate, claim → deliver →
+  close.** The skills and templates follow the `anthill` CLI's backlog v2
+  contract (`anthill-cli` `docs/BACKLOG_V2_SPEC.md`; CLI 0.1.0 or later).
+  What changes for a consumer:
+  - **Status** is `new · triaged · in-progress · validation · done · blocked
+    · parked · discarded`, moved only by CLI verbs (`triage`, `claim`,
+    `deliver`, `close --done|--reject|--discard|--remove`, `block` /
+    `unblock`, `release`, `park` / `unpark`). `status: idea` and
+    `status: approved` are gone; `set status=…` is refused.
+  - **Approval** is a separate field, `dispatch: proposed | approved |
+    fast-tracked`, moved only by the user-gated `approve`, `fast-track`,
+    `unapprove`. `expedite` fast-tracks instead of writing `approved` plus an
+    `expedited` note token; `dispatch expedited` becomes
+    `dispatch fast-tracked` (`list --dispatch fast-tracked --ready`).
+  - **Disposition** is `auto | design | interactive | open` (how the item is
+    expected to be implemented), replacing `AUTO | REVIEW | DISCARD`.
+    **Ready** = triaged + approved/fast-tracked + `disposition: auto` + a real
+    `verify`. `value-verdict` is dropped; triage's reasoning and value verdict
+    live in the body's `## Triage` section. `note: needs-spec` becomes
+    `disposition: design`.
+  - **New fields:** `summary`, `reporter` (`user | supervisor | worker`;
+    `submit` passes `--reporter` per tier), `priority: low`, and CLI stamps
+    `created-at`, `triaged-at`, `claimed-at`, `claimed-by`, `session`,
+    `delivered-at`, `closed-at`.
+  - **Body sections:** `## Description` (the cold-worker brief),
+    `## Acceptance`, `## Triage` written by triage; `## Evidence` and `## Log`
+    appended by the CLI.
+  - **Archive:** closed items are no longer deleted — finished items move to
+    `done/` (kept permanently), discarded ones to `discarded/` (purged only by
+    `anthill backlog prune`); `close --remove` still deletes.
+  - **Item-state invariant:** previously the dispatch sender wrote all queue
+    state and workers never touched it. Now controllers (`dispatch`,
+    `dispatch-loop`, `supervisor`, the user) own `close`, `approve`, and
+    `release`; a worker may only advance the item it holds — `claim` on
+    pickup when its brief hands it an id, `deliver` (claimant-only, with
+    `--by <claim handle>`), `block`. Dispatch workers report
+    `outcome: delivered` instead of `outcome: done`; the sender verifies the
+    delivered `## Evidence` against `## Acceptance` + `verify`, then
+    `close --done` or `close --reject`.
+  - **Supervisor:** the brief template gains an `ITEM` section (backlog id,
+    or `none` + reason); workers claim on pickup and deliver on finish; the
+    supervisor closes after verifying; board rows and `rehydrate` snapshots
+    carry the item id; a cold successor rebuilds from `list --active`.
+  - **`workstreams.md` frontmatter** gains `schema: 2`, `change-types`, and
+    `never-auto-change-types` (the CLI refuses `disposition: auto` for the
+    latter).
+  - **Consumer action:** (1) upgrade the `anthill` CLI to the backlog v2
+    release; (2) run `anthill backlog migrate` (try `--dry-run` first) — it
+    rewrites every item in place and stamps `schema: 2` into `workstreams.md`;
+    (3) run `anthill sync` to re-copy the skills; (4) re-derive
+    `.anthill/backlog/bindings.md` and `.anthill/supervisor/brief-template.md`
+    from the new templates (`sync` never touches `.anthill/`), and carry over
+    the template changes to `backlog/workstreams.md` (frontmatter keys,
+    never-auto wording), `backlog/README.md`, `backlog/CHANGELOG.md` header,
+    `supervisor/bindings.md` (evidence + intake), `dispatch/ledger.md`,
+    `dispatch/control.md`, and `escalations/README.md`; (5) restate the
+    item-state invariant in your `CLAUDE.md` if it carries the sender-owns-
+    queue-state rule (see `CLAUDE.template.md`); (6) `anthill backlog
+    validate` clean.
+
 - **Supervisor investigation briefs ask for findings and rationale, never a
   "reasoning trail".** That wording trips the model's safeguards
   (`reasoning_extraction`) and kills the investigator at launch on every
