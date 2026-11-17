@@ -183,11 +183,13 @@ brief to hide a second task defeats the gate and breaks rule 3.
 ## Investigation scratchpad
 
 When a subagent investigates and you consume only its conclusion, have
-it write its reasoning trail to
+it write its findings and rationale, with the evidence behind each, to
 `.anthill/supervisor/scratchpad/<yyyy-mm-dd>-<topic>.md` and return the
-path with the conclusion (persist the trail yourself if the agent type
+path with the conclusion (persist the report yourself if the agent type
 is read-only). Reference the file when the conclusion drives a decision
-the user might question.
+the user might question. Word briefs as "findings", "rationale",
+"evidence" — never ask an agent to write out its reasoning: that phrasing
+trips the model's safeguards and the agent dies at launch.
 
 ## Exclusive resources
 

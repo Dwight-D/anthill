@@ -7,6 +7,14 @@ binding — `anthill sync` automates the skill re-copy). Newest first.
 
 ## Unreleased
 
+- **Supervisor investigation briefs ask for findings and rationale, never a
+  "reasoning trail".** That wording trips the model's safeguards
+  (`reasoning_extraction`) and kills the investigator at launch on every
+  model; the scratchpad section now words the ask as findings + rationale +
+  evidence and says why.
+  - **Consumer action:** re-copy `.claude/skills/supervisor/` verbatim
+    (`anthill sync`).
+
 - **Delegation gate judges relatedness by shared information.** Work
   belongs on one worker when it reads or changes largely the same
   artifacts, forms one judgment over a shared set of items, or chains
