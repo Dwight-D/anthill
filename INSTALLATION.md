@@ -184,3 +184,19 @@ pointer to `.anthill/backlog/`. Keep it small.
   mechanically.
 - **Posture.** Start propose-only (triage recommends, the user approves);
   loosen per workstream as the gates earn trust.
+
+## Optional: Anthill Claude mod
+
+`anthill-claude` is a Claude Code plugin (separate repository) that adds Claude-side
+enhancements to Anthill sessions, starting with a timestamp on each message.
+It is per-user, not part of the project's checked-in harness. Install it from
+within Claude Code:
+
+```
+/plugin marketplace add Dwight-D/anthill-claude
+/plugin install anthill-claude@anthill-claude
+```
+
+To share it with every collaborator of a project, declare it in the project's
+`.claude/settings.json` (`extraKnownMarketplaces` + `enabledPlugins`) — a
+user-owned config file, edited by the user.
