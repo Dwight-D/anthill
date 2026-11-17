@@ -116,7 +116,11 @@ conversation with the user. Put these questions to them, in order:
 5. **What is the worker-cap derivation, and the dispatch parallelism posture?**
    Both fall out of the resource inventory. → `resources.md`.
 6. **What is the sweep order?** → `workstreams.md` frontmatter.
-7. **What may an autonomous worker do without asking?** The concrete
+7. **What is the item-key prefix?** 2–5 uppercase letters; every backlog
+   item is referred to as `<prefix>-<number>` (`ANT-74`). `anthill init`
+   seeds it (`--key-prefix`, default from the root directory's name) →
+   `workstreams.md` frontmatter `key-prefix`.
+8. **What may an autonomous worker do without asking?** The concrete
    proceed-list, in the project's real skills and commands — every entry a
    routine action the safety invariants do not gate. → `autonomy.md`.
 
@@ -164,7 +168,8 @@ pointer to `.anthill/backlog/`. Keep it small.
    improvement (`submit`: title + value) — it lands in `intake/` as
    `status: new`. Triage it: body sections written, routed, classified per
    profile, `disposition: auto` with a real `verify` → `status: triaged`.
-   The user approves it (`anthill backlog approve <id>`); it now shows in
+   The CLI prints the item's key (`created ANT-1`). The user approves it
+   (`anthill backlog approve ANT-1`); it now shows in
    `anthill backlog list --ready`. `dispatch` it. Pass criteria: the claim
    stamps `claimed-by` and `session`; the worker delivers
    (`status: validation`, `## Evidence` filled); the sender verifies that evidence
@@ -193,7 +198,9 @@ pointer to `.anthill/backlog/`. Keep it small.
 - **Sync downstream.** Periodically, re-copy the general-tier skills from the
   upstream Anthill repository at a newer release than `.anthill/framework.md`'s
   `synced-through` ref, then bump the ref. `anthill sync` does this
-  mechanically.
+  mechanically. When the upstream `CHANGELOG.md` entry names a backlog
+  migration, run it before the sync (`anthill backlog migrate`, with the
+  flags the entry gives).
 - **Posture.** Start propose-only: triage proposes (`dispatch: proposed`)
   with a disposition; the user approves (`approve`) or fast-tracks
   (`fast-track`, or the `expedite` skill); no agent approves. Loosen per
